@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Flip with Zoom Effect</title>
+    <style>
+        body {
+            background-color: #213823;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .book {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            perspective: 2000px; /* Perspective for 3D effect */
+        }
+
+        .page {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: left;
+            transform-style: preserve-3d;
+            transition: transform 2s ease;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Glass effect */
+        }
+
+        .page.flipped {
+            transform: rotateY(-140deg); /* Flip the page */
+        }
+
+        .page.zoomed {
+            transform: scale(1.5); /* Zoom in effect */
+            z-index: 1000; /* Bring zoomed page to the front */
+        }
+
+        .content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .content img, .content video {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+            backdrop-filter: blur(8px) saturate(1.8);
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3); /* Glass effect */
+        }
+
+        /* Style to reduce image size only for Page 6 */
+        #page6 .content img {
+            max-height: 70%; /* Reduce only the image on page 6 */
+        }
+
+        /* Style for blinking blur circles (buttons) */
+        .circle-button {
+            position: absolute;
+            top: 50%;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+            transform: translateY(-50%);
+            animation: blink 1.5s infinite alternate;
+            z-index: 10;
+        }
+
+        #prevBtn {
+            left: -70px; /* Adjust to the left of the book */
+        }
+
+        #nextBtn {
+            right: -70px; /* Adjust to the right of the book */
+        }
+
+        /* Blinking animation */
+        @keyframes blink {
+            0% {
+                transform: scale(1) translateY(-50%);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.2) translateY(-50%);
+                opacity: 0.6;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="book">
+    <div class="page" id="page1">
+        <div class="content">
+            <video id="video1" autoplay muted loop>
+                <source src="https://imgur.com/zOnCgbf.mp4" type="video/mp4"> <!-- Video set to autoplay muted -->
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+    <div class="page" id="page2">
+        <div class="content">
+            <img src="https://imgur.com/wyWDled.png" alt="Page 2"> <!-- Updated Page 2 image -->
+        </div>
+    </div>
+    <div class="page" id="page3">
+        <div class="content">
+            <img src="https://imgur.com/2q9aKeh.png" alt="Page 3">
+        </div>
+    </div>
+    <div class="page" id="page4">
+        <div class="content">
+          <img src="https://imgur.com/rMBEl8M.png" alt="Page 4">
+        </div>
+    </div>
+    <div class="page" id="page5">
+        <div class="content">
+            <img src="https://imgur.com/2FU8iWf.png" alt="Page 5">
+        </div>
+    </div>
+    <div class="page" id="page5">
+        <div class="content">
+            <img src="https://imgur.com/mfCrDqh.png" alt="Page 6">
+        </div>
+    </div>
+    <div class="page" id="page7">
+        <div class="content">
+            <img src="https://imgur.com/rkACX7O.png" alt="Page 7">
+        </div>
+    </div>
+    
+    <!-- Blinking blur circles for navigation -->
+    <div class="circle-button" id="prevBtn"></div>
+    <div class="circle-button" id="nextBtn"></div>
+</div>
+
+<script>
+    const pages = document.querySelectorAll('.page');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    let currentPage = 0;
+    let isZoomed = false;
+
+    // Show the current page in the book
+    function showPage(page) {
+        pages.forEach((p, index) => {
+            p.style.zIndex = pages.length - index; // Maintain z-index to prevent overlap issues
+            if (index <= page) {
+                p.classList.add('flipped');
+            } else {
+                p.classList.remove('flipped');
+            }
+        });
+    }
+
+    // Handle zoom effect when double-clicking a page
+    pages.forEach((page) => {
+        page.addEventListener('dblclick', (event) => {
+            if (isZoomed) {
+                page.classList.remove('zoomed'); // Zoom out
+            } else {
+                page.classList.add('zoomed'); // Zoom in
+            }
+            isZoomed = !isZoomed; // Toggle the zoom state
+        });
+    });
+
+    // Unmute the video on first user interaction (click or touch)
+    const video1 = document.getElementById('video1');
+    document.body.addEventListener('click', () => {
+        video1.muted = false; // Unmute the video
+    });
+
+    // Navigation logic for the book
+    nextBtn.addEventListener('click', () => {
+        currentPage = (currentPage + 1) % pages.length; // Loop to first page after last
+        showPage(currentPage);
+    });
+
+    prevBtn.addEventListener('click', () => {
+        currentPage = (currentPage - 1 + pages.length) % pages.length; // Loop to last page before first
+        showPage(currentPage);
+    });
+
+    // Initialize the book with the first page
+    showPage(currentPage);
+</script>
+
+</body>
+</html>
