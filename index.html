@@ -7,13 +7,13 @@
     <style>
         body {
             background: url('https://imgur.com/lJfN5RW.jpg') no-repeat center center fixed;
-            background-size: cover; /* Make sure the background covers the whole area */
+            background-size: cover; /* Ensure background covers the entire screen */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            overflow: hidden; /* Prevent scrolling if the image is larger */
+            overflow: hidden; /* Prevent scrolling */
         }
 
         .book {
@@ -24,7 +24,7 @@
         }
 
         .page {
-            width: calc(100% - 5px); /* Adjust width to allow for a gap in the middle */
+            width: calc(100% - 5px); /* Adjust width for a gap in the middle */
             height: 100%;
             position: absolute;
             top: 0;
@@ -42,7 +42,7 @@
         }
 
         .page.zoomed {
-            transform: scale(1.5); /* Zoom in effect */
+            transform: scale(1.5); /* Zoom in */
             z-index: 1000; /* Bring zoomed page to the front */
         }
 
@@ -57,23 +57,22 @@
         }
 
         .content img, .content video {
-            width: 95%; /* Reduced to 95% size */
-            height: 95%; /* Reduced to 95% size */
-            object-fit: cover; /* Ensures the image/video fills the page while maintaining aspect ratio */
+            width: 95%; /* Reduced size */
+            height: 95%;
+            object-fit: cover; /* Ensure content fills the page */
             border-radius: 10px;
             backdrop-filter: blur(8px) saturate(1.8);
             box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3); /* Glass effect */
         }
 
-        /* Style for blinking blur circles (buttons) */
         .circle-button {
             position: absolute;
             top: 50%;
-            width: 30px; /* Reduced size */
-            height: 30px; /* Reduced size */
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             background-color: rgba(255, 255, 255, 0.6);
-            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8); /* Reduced shadow size */
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8); /* Glow effect */
             backdrop-filter: blur(8px);
             cursor: pointer;
             transform: translateY(-50%);
@@ -82,28 +81,27 @@
         }
 
         #prevBtn {
-            left: -50px; /* Adjusted to the left of the book */
+            left: -50px; /* Positioned left of the book */
         }
 
         #nextBtn {
-            right: -50px; /* Adjusted to the right of the book */
+            right: -50px; /* Positioned right of the book */
         }
 
-        /* Blinking animation */
         @keyframes blink {
             0% {
                 transform: scale(1) translateY(-50%);
                 opacity: 1;
             }
             100% {
-                transform: scale(1.1) translateY(-50%); /* Slight scale down */
+                transform: scale(1.1) translateY(-50%); /* Slight shrink */
                 opacity: 0.7;
             }
         }
 
         /* Responsive Design */
 
-        /* Tablet View (Portrait) */
+        /* Tablet View */
         @media screen and (max-width: 1024px) {
             .book {
                 width: 300px;
@@ -119,7 +117,7 @@
             }
         }
 
-        /* Mobile View (Portrait) */
+        /* Mobile View */
         @media screen and (max-width: 768px) {
             .book {
                 width: 200px;
@@ -135,7 +133,7 @@
             }
         }
 
-        /* Mobile View (Landscape) */
+        /* Mobile Landscape */
         @media screen and (max-width: 768px) and (orientation: landscape) {
             .book {
                 width: 350px;
@@ -159,7 +157,7 @@
     <div class="page" id="page1">
         <div class="content">
             <video id="video1" autoplay muted loop>
-                <source src="https://imgur.com/zOnCgbf.mp4" type="video/mp4"> <!-- Video set to autoplay muted -->
+                <source src="https://imgur.com/zOnCgbf.mp4" type="video/mp4"> <!-- Video autoplay, muted -->
                 Your browser does not support the video tag.
             </video>
         </div>
@@ -176,7 +174,7 @@
     </div>
     <div class="page" id="page4">
         <div class="content">
-          <img src="https://imgur.com/rMBEl8M.png" alt="Page 4">
+            <img src="https://imgur.com/rMBEl8M.png" alt="Page 4">
         </div>
     </div>
     <div class="page" id="page5">
@@ -194,8 +192,8 @@
             <img src="https://imgur.com/rkACX7O.png" alt="Page 7">
         </div>
     </div>
-    
-    <!-- Blinking blur circles for navigation -->
+
+    <!-- Navigation buttons -->
     <div class="circle-button" id="prevBtn"></div>
     <div class="circle-button" id="nextBtn"></div>
 </div>
@@ -220,38 +218,34 @@
         });
     }
 
-    // Handle zoom effect when double-clicking a page
+    // Zoom effect on double-click
     pages.forEach((page) => {
         page.addEventListener('dblclick', (event) => {
             if (isZoomed) {
-                page.classList.remove('zoomed'); // Zoom out
+                page.classList.remove('zoomed');
             } else {
-                page.classList.add('zoomed'); // Zoom in
+                page.classList.add('zoomed');
             }
-            isZoomed = !isZoomed; // Toggle the zoom state
+            isZoomed = !isZoomed; // Toggle zoom
         });
     });
 
-    // Unmute the video on first user interaction (click or touch)
+    // Unmute video on user interaction
     document.body.addEventListener('click', () => {
-        video1.muted = false; // Unmute the video
+        video1.muted = false;
     });
 
-    // Navigation logic for the book
+    // Navigation logic
     nextBtn.addEventListener('click', () => {
-        currentPage = (currentPage + 1) % pages.length; // Loop to first page after last
+        currentPage = (currentPage + 1) % pages.length;
         showPage(currentPage);
-
-        // Reduce audio by 70% when next is clicked
-        video1.volume = 0.3;
+        video1.volume = 0.3; // Reduce volume by 70% on next click
     });
 
     prevBtn.addEventListener('click', () => {
-        currentPage = (currentPage - 1 + pages.length) % pages.length; // Loop to last page before first
+        currentPage = (currentPage - 1 + pages.length) % pages.length;
         showPage(currentPage);
-
-        // Reset the audio back to full volume when navigating backward
-        video1.volume = 1;
+        video1.volume = 1; // Reset volume to full on previous click
     });
 
     // Initialize the book with the first page
