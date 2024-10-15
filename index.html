@@ -6,12 +6,14 @@
     <title>Book Flip with Zoom Effect</title>
     <style>
         body {
-            background-color: #213823;
+            background: url('https://imgur.com/lJfN5RW.jpg') no-repeat center center fixed;
+            background-size: cover; /* Make sure the background covers the whole area */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden; /* Prevent scrolling if the image is larger */
         }
 
         .book {
@@ -22,12 +24,12 @@
         }
 
         .page {
-            width: 100%;
+            width: calc(100% - 5px); /* Adjust width to allow for a gap in the middle */
             height: 100%;
             position: absolute;
             top: 0;
             left: 0;
-            transform-origin: left;
+            transform-origin: left center;
             transform-style: preserve-3d;
             transition: transform 2s ease;
             z-index: 1;
@@ -50,34 +52,28 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
-            text-align: center;
-            padding: 20px;
+            padding: 0;
             box-sizing: border-box;
         }
 
         .content img, .content video {
-            max-width: 100%;
-            max-height: 100%;
+            width: 95%; /* Reduced to 95% size */
+            height: 95%; /* Reduced to 95% size */
+            object-fit: cover; /* Ensures the image/video fills the page while maintaining aspect ratio */
             border-radius: 10px;
             backdrop-filter: blur(8px) saturate(1.8);
             box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3); /* Glass effect */
-        }
-
-        /* Style to reduce image size only for Page 6 */
-        #page6 .content img {
-            max-height: 70%; /* Reduce only the image on page 6 */
         }
 
         /* Style for blinking blur circles (buttons) */
         .circle-button {
             position: absolute;
             top: 50%;
-            width: 50px;
-            height: 50px;
+            width: 30px; /* Reduced size */
+            height: 30px; /* Reduced size */
             border-radius: 50%;
             background-color: rgba(255, 255, 255, 0.6);
-            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.8);
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8); /* Reduced shadow size */
             backdrop-filter: blur(8px);
             cursor: pointer;
             transform: translateY(-50%);
@@ -86,11 +82,11 @@
         }
 
         #prevBtn {
-            left: -70px; /* Adjust to the left of the book */
+            left: -50px; /* Adjusted to the left of the book */
         }
 
         #nextBtn {
-            right: -70px; /* Adjust to the right of the book */
+            right: -50px; /* Adjusted to the right of the book */
         }
 
         /* Blinking animation */
@@ -100,10 +96,61 @@
                 opacity: 1;
             }
             100% {
-                transform: scale(1.2) translateY(-50%);
-                opacity: 0.6;
+                transform: scale(1.1) translateY(-50%); /* Slight scale down */
+                opacity: 0.7;
             }
         }
+
+        /* Responsive Design */
+
+        /* Tablet View (Portrait) */
+        @media screen and (max-width: 1024px) {
+            .book {
+                width: 300px;
+                height: 450px;
+            }
+
+            #prevBtn {
+                left: -40px;
+            }
+
+            #nextBtn {
+                right: -40px;
+            }
+        }
+
+        /* Mobile View (Portrait) */
+        @media screen and (max-width: 768px) {
+            .book {
+                width: 200px;
+                height: 300px;
+            }
+
+            #prevBtn {
+                left: -30px;
+            }
+
+            #nextBtn {
+                right: -30px;
+            }
+        }
+
+        /* Mobile View (Landscape) */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            .book {
+                width: 350px;
+                height: 250px;
+            }
+
+            #prevBtn {
+                left: -40px;
+            }
+
+            #nextBtn {
+                right: -40px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -137,7 +184,7 @@
             <img src="https://imgur.com/2FU8iWf.png" alt="Page 5">
         </div>
     </div>
-    <div class="page" id="page5">
+    <div class="page" id="page6">
         <div class="content">
             <img src="https://imgur.com/mfCrDqh.png" alt="Page 6">
         </div>
@@ -157,6 +204,7 @@
     const pages = document.querySelectorAll('.page');
     const nextBtn = document.getElementById('nextBtn');
     const prevBtn = document.getElementById('prevBtn');
+    const video1 = document.getElementById('video1');
     let currentPage = 0;
     let isZoomed = false;
 
@@ -185,7 +233,6 @@
     });
 
     // Unmute the video on first user interaction (click or touch)
-    const video1 = document.getElementById('video1');
     document.body.addEventListener('click', () => {
         video1.muted = false; // Unmute the video
     });
@@ -194,11 +241,17 @@
     nextBtn.addEventListener('click', () => {
         currentPage = (currentPage + 1) % pages.length; // Loop to first page after last
         showPage(currentPage);
+
+        // Reduce audio by 70% when next is clicked
+        video1.volume = 0.3;
     });
 
     prevBtn.addEventListener('click', () => {
         currentPage = (currentPage - 1 + pages.length) % pages.length; // Loop to last page before first
         showPage(currentPage);
+
+        // Reset the audio back to full volume when navigating backward
+        video1.volume = 1;
     });
 
     // Initialize the book with the first page
